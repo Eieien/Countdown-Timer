@@ -17,15 +17,12 @@ export default function Timer({status} : TimerProps){
     
     useEffect(() => {
         const handleClickOutside = (event: React.MouseEvent<HTMLButtonElement>) => {
-          // Check if the click occurred outside the referenced element
           if (myRef.current && !myRef.current.contains(event.target)) {
               setEditTimer(false);
             } 
         };
-        // Attach the event listener to the document body
         document.body.addEventListener('mousedown', handleClickOutside);
     
-        // Clean up the event listener when the component unmounts
         return () => {
           document.body.removeEventListener('mousedown', handleClickOutside);
         };
@@ -44,11 +41,10 @@ export default function Timer({status} : TimerProps){
     }
 
     useEffect(() => {
-        document.title = timer.toString();
+        document.title = formatTime(timer);
     }, [timer])
 
     useEffect(() => {
-        // if(!isRunning) return;
         if(status === "running"){
             if (timerRef.current) clearInterval(timerRef.current);
             const intervalId = setInterval(() => {
@@ -99,9 +95,9 @@ export default function Timer({status} : TimerProps){
       };
 
     const shiftRight = (digit: string) => {
-        const digits = display.replace(/:/g, "").split(""); // get raw 6 digits
+        const digits = display.replace(/:/g, "").split("");
         digits.push(digit);
-        while (digits.length > 6) digits.shift(); // keep only last 6
+        while (digits.length > 6) digits.shift(); 
         updateDisplayFromDigits(digits);
     };
 
