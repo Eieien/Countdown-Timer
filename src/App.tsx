@@ -10,7 +10,7 @@ function App() {
       <div className='min-h-screen flex flex-col justify-center items-center'>
         <div>
           <h1 className='text-4xl'>Countdown Timer</h1>
-          <h1 className='text-4xl text-center'>
+          <h1 className='text-4xl text-center`'>
             4:00
           </h1>
 
