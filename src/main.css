@@ -20,6 +20,6 @@
     }
 
     .timer-btn{
-        @apply px-2 py-1 rounded rounded-md border border-white-4 hover:bg-white-2 transition duration-300 cursor-pointer
+        @apply px-4 py-1.5 rounded rounded-md border border-white-4 hover:bg-white-2 dark:border-dark-4 dark:bg-dark-2 dark:hover:bg-dark-3 transition cursor-pointer
     }
 }

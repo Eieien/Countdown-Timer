@@ -8,11 +8,13 @@ interface TimerProps{
 export default function Timer({status} : TimerProps){
 
     const [timer, setTimer] = useState(0);
+    const [originalTime, setOriginalTime] = useState(0);
     const [editTimer, setEditTimer] = useState(false);
     const [display, setDisplay] = useState("00:00:00");
-
+    
     const myRef = useRef(null);
-
+    const timerRef = useRef<number | null>(null);
+    
     useEffect(() => {
         const handleClickOutside = (event: React.MouseEvent<HTMLButtonElement>) => {
           // Check if the click occurred outside the referenced element
@@ -28,6 +30,51 @@ export default function Timer({status} : TimerProps){
           document.body.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    const handleTimer = (intervalID: number) => {
+        setTimer((prev) => {
+            if(prev < 1){
+                clearInterval(intervalID);
+                document.title = "Time's UP!";
+                return 0;
+            }
+            
+            return prev - 1;
+        });
+    }
+
+    useEffect(() => {
+        document.title = timer.toString();
+    }, [timer])
+
+    useEffect(() => {
+        // if(!isRunning) return;
+        if(status === "running"){
+            if (timerRef.current) clearInterval(timerRef.current);
+            const intervalId = setInterval(() => {
+                handleTimer(intervalId)
+            }, 1000)
+            timerRef.current = intervalId;
+            
+        
+        }else if(status === "paused"){
+            if(timerRef.current){
+                clearInterval(timerRef.current);
+            }
+        }else if(status === "reset"){
+            if(timerRef.current){
+                clearInterval(timerRef.current);
+            }
+            setTimer(originalTime);
+        }
+
+        return () => {
+            if (timerRef.current) clearInterval(timerRef.current);
+        }
+
+    }, [status])
+
+    
 
     const parseTime = (str: string) => {
         const [h, m, s] = str.split(":").map(Number);
@@ -51,29 +98,30 @@ export default function Timer({status} : TimerProps){
         }
       };
 
-      const shiftRight = (digit: string) => {
+    const shiftRight = (digit: string) => {
         const digits = display.replace(/:/g, "").split(""); // get raw 6 digits
         digits.push(digit);
         while (digits.length > 6) digits.shift(); // keep only last 6
         updateDisplayFromDigits(digits);
-      };
+    };
 
-      const shiftLeft = () => {
+    const shiftLeft = () => {
         const digits = display.replace(/:/g, "").split("");
         digits.pop();
         while (digits.length < 6) digits.unshift("0");
         updateDisplayFromDigits(digits);
-      };
+    };
 
-      const updateDisplayFromDigits = (digits: string[]) => {
+    const updateDisplayFromDigits = (digits: string[]) => {
         const formatted = `${digits[0]}${digits[1]}:${digits[2]}${digits[3]}:${digits[4]}${digits[5]}`;
         setDisplay(formatted);
         setTimer(parseTime(formatted));
-      };
+        setOriginalTime(parseTime(formatted));
+    };
 
-      const handleBlur = () => {
-        setDisplay(formatTime(timer));
-      };
+    const handleBlur = () => {
+    setDisplay(formatTime(timer));
+    };
 
 
     const formatTime = (milliseconds: number) => {
@@ -82,7 +130,9 @@ export default function Timer({status} : TimerProps){
         const seconds = milliseconds % 60;
     
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      };
+    };
+
+
     return(
         <>
             <h1 onClick={() => setEditTimer(true)} className={`${editTimer ? "hidden" : "inline-block"} text-8xl text-center`}>

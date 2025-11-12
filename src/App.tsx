@@ -10,7 +10,6 @@ function App() {
 
   const handleTimerStatus = (status: string) => {
     setTimerstatus(status);
-    console.log(status);
   }
 
   return (
