@@ -16,6 +16,7 @@ export default function Timer({status} : TimerProps){
     const timerRef = useRef<number | null>(null);
     
     useEffect(() => {
+        
         const handleClickOutside = (event: React.MouseEvent<HTMLButtonElement>) => {
           if (myRef.current && !myRef.current.contains(event.target)) {
               setEditTimer(false);
@@ -45,7 +46,7 @@ export default function Timer({status} : TimerProps){
     }, [timer])
 
     useEffect(() => {
-        if(status === "running"){
+        if(status === "run"){
             if (timerRef.current) clearInterval(timerRef.current);
             const intervalId = setInterval(() => {
                 handleTimer(intervalId)
@@ -57,7 +58,7 @@ export default function Timer({status} : TimerProps){
             if(timerRef.current){
                 clearInterval(timerRef.current);
             }
-        }else if(status === "reset"){
+        }else if(status === "idle"){
             if(timerRef.current){
                 clearInterval(timerRef.current);
             }
@@ -128,14 +129,22 @@ export default function Timer({status} : TimerProps){
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
+    const hanldeShowTimer = () => {
+        if(status !== "run"){
+            setEditTimer(true)
+        }else{
+            setEditTimer(false);
+        }
+    }
+
 
     return(
         <>
-            <h1 onClick={() => setEditTimer(true)} className={`${editTimer ? "hidden" : "inline-block"} text-8xl text-center`}>
+            <h1 onClick={hanldeShowTimer} className={`${editTimer ? "hidden" : "inline-block"} text-8xl text-center`}>
                 {formatTime(timer)}
             </h1>
             
-            {editTimer && <input  value={display} onKeyDown={handleKeyDown} onBlur={handleBlur} readOnly ref={myRef} className="text-8xl text-dark-4 w-100 text-center focus:outline-0 " placeholder="00:00:00"/>}
+            {editTimer  && <input  value={display} onKeyDown={handleKeyDown} onBlur={handleBlur} readOnly ref={myRef} className="text-8xl text-dark-4 dark:text-white-4 w-100 text-center focus:outline-0 " placeholder="00:00:00"/>}
         </>
 
     )
